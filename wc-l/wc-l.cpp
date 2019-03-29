@@ -20,18 +20,16 @@ int main(int argc, char** argv ) {
     //}
 	
 	cout << "Opening file a.txt\n"; // << argv[1] << "\n";
+
+	HANDLE f = CreateFile(L"a.txt",0,0,0, OPEN_EXISTING,0,0);
 	
-	FILE* f= fopen("a.txt", "r");
-
-	
-    QueryPerformanceFrequency((LARGE_INTEGER *)&freq);// запрашиваем число тиков в 1 сек
-
-
+	QueryPerformanceFrequency((LARGE_INTEGER *)&freq);// запрашиваем число тиков в 1 сек
 	QueryPerformanceCounter((LARGE_INTEGER *)&t1);// смотрим время после окончания цикла
 	
-	while(!feof(f)){
-	nread = fread(str, 1, 4096, f);
-	for(int i=0; i<nread; i++){
+	BOOL bResult = TRUE;
+	while(!(bResult && nread == 0)){
+		ReadFile(f,str, 4096, &nread, 0);
+		for(DWORD i=0; i<nread; i++){
 		if(str[i] == '\n')
 		nlines++;
 	}
@@ -43,7 +41,7 @@ int main(int argc, char** argv ) {
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&t2);// смотрим время после окончания цикла
 
-	fclose(f);
+	CloseHandle(f);
 
 	cout << "Time spent:" << (t2-t1)/(1.*freq) << "\nFile has " << nlines << " lines\n";
 	return 0;
