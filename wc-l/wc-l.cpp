@@ -10,8 +10,8 @@
 using namespace std;
 
 int main(int argc, char** argv ) {
-    long long t1, t2, freq, i = 0;
-	string str;
+    long long t1, t2, freq, nlines = 0, nread;
+	char str[4096];
 	
 	//if (argc == 1) 
     //{
@@ -21,23 +21,30 @@ int main(int argc, char** argv ) {
 	
 	cout << "Opening file a.txt\n"; // << argv[1] << "\n";
 	
-	ifstream f("a.txt");
+	FILE* f= fopen("a.txt", "r");
+
 	
     QueryPerformanceFrequency((LARGE_INTEGER *)&freq);// запрашиваем число тиков в 1 сек
 
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&t1);// смотрим время после окончания цикла
 	
-	while(!f.eof()){
-	getline(f, str);
-	i++;
+	while(!feof(f)){
+	nread = fread(str, 1, 4096, f);
+	for(int i=0; i<nread; i++){
+		if(str[i] == '\n')
+		nlines++;
+	}
 	}
 	
+	cout << fixed;
+	cout.precision(3);
 
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&t2);// смотрим время после окончания цикла
 
-	cout << str << "\n Time spent:" << (t2-t1)/(1.*freq);
-	cout << "\n File a has:" << i << "lines";
+	fclose(f);
+
+	cout << "Time spent:" << (t2-t1)/(1.*freq) << "\nFile has " << nlines << " lines\n";
 	return 0;
 }
